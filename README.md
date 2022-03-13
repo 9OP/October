@@ -1,7 +1,5 @@
 # October - take home challenge
 
-Time: ±4h
-
 ## Start the project
 
 With docker:
@@ -21,6 +19,12 @@ npm run dev
 Service is available at: `http://localhost:8080/api?company=<COMPANY-NAME>&postal_code=<POSTAL-CODE>`
 
 ## Test
+
+On host:
+
+```sh
+npm run test
+```
 
 ### Notes:
 

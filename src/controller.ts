@@ -1,8 +1,6 @@
 import Router from "koa-router";
-import LRUCache from "lru-cache";
 import { searchNumber } from "./service";
-
-const cache = new LRUCache({ max: 256 });
+import { StatusCodes } from "http-status-codes";
 
 export const router = new Router({ prefix: "/api" });
 
@@ -11,21 +9,18 @@ router.get("/", async (ctx, next) => {
   const postalCode = String(ctx.request.query["postal_code"] || "");
 
   if (!company) {
-    ctx.throw("missing 'company' query parameter", 400);
+    ctx.throw(StatusCodes.BAD_REQUEST, "missing 'company' query parameter");
   }
 
   let number;
-  if (cache.get(company)) {
-    number = cache.get(company);
-  } else {
-    try {
-      number = await searchNumber(company, postalCode);
-      number
-        ? cache.set(company, number)
-        : ctx.throw(`${company} number not found`, 400);
-    } catch (err) {
-      ctx.throw(`${company} number not found`, 400);
-    }
+  try {
+    number = await searchNumber(company, postalCode);
+  } catch {
+    ctx.throw(StatusCodes.BAD_REQUEST, `${company} number not found`);
+  }
+
+  if (!number) {
+    ctx.throw(StatusCodes.BAD_REQUEST, `${company} number not found`);
   }
 
   ctx.body = { number };

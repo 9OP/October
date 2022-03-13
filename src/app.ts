@@ -23,8 +23,10 @@ export function createApp() {
   const app = new Koa();
 
   // Middlewares
+  if (process.env["NODE_ENV"] !== "test") {
+    app.use(logger());
+  }
   app.use(json());
-  app.use(logger());
   app.use(bodyParser());
   app.use(errorHandler());
 

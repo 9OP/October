@@ -1,6 +1,21 @@
+import LRUCache from "lru-cache";
 import puppeteer from "puppeteer";
 
-export const searchNumber = async (name: string, postalCode: string) => {
+export const cache = new LRUCache({ max: 256 });
+
+export const searchNumber = async (
+  name: string,
+  postalCode: string
+): Promise<string> => {
+  if (cache.has(name)) {
+    return cache.get(name) as string;
+  }
+  const number = await _searchNumber(name, postalCode);
+  cache.set(name, number);
+  return number;
+};
+
+export const _searchNumber = async (name: string, postalCode: string) => {
   let number = null;
   const browser = await puppeteer.launch({
     headless: true,
